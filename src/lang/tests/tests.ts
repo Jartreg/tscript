@@ -6,36 +6,42 @@ import { test_lattice_craft } from "./test_lattice_craft";
 export type TscriptExpectation = any;
 export type TscriptEvents = any;
 
-export interface _TscriptTest{
-	name:string,
-	description:string,
-	code:string,
-	expectation:Array<TscriptExpectation> | object,
+export interface _TscriptTest {
+	name: string;
+	description: string;
+	code: string;
+	expectation: Array<TscriptExpectation> | object;
 }
 
-export interface TscriptParseTest extends _TscriptTest{
-	parseOnly:boolean;
+export interface TscriptParseTest extends _TscriptTest {
+	parseOnly: boolean;
 }
 
-export interface TscriptEventTest extends _TscriptTest{
+export interface TscriptEventTest extends _TscriptTest {
 	events: undefined | Array<TscriptEvents>;
 }
 
-export interface TscriptInputTest extends _TscriptTest{
-	input: Array<any>,
+export interface TscriptInputTest extends _TscriptTest {
+	input: Array<any>;
 }
 
-export interface TscriptBrowserOnlyTest extends _TscriptTest{
-	browserOnly: boolean,
+export interface TscriptBrowserOnlyTest extends _TscriptTest {
+	browserOnly: boolean;
 }
 
-export type TscriptTest = _TscriptTest | TscriptEventTest | TscriptInputTest | TscriptBrowserOnlyTest | TscriptParseTest;
+export type TscriptTest =
+	| _TscriptTest
+	| TscriptEventTest
+	| TscriptInputTest
+	| TscriptBrowserOnlyTest
+	| TscriptParseTest;
 
-export  const tests:Array<TscriptTest> = [
+export const tests: Array<TscriptTest> = [
 	// lexer
 	{
 		name: "lexer and token types",
-		description: "test the types of constants - including errors that remained undetected for much too long",
+		description:
+			"test the types of constants - including errors that remained undetected for much too long",
 		code: `
 			print(Type(null));
 			print(Type(false));
@@ -49,17 +55,18 @@ export  const tests:Array<TscriptTest> = [
 			print(Type("0.0"));
 		`,
 		expectation: [
-				{type: "print", message: "<Type Null>"},
-				{type: "print", message: "<Type Boolean>"},
-				{type: "print", message: "<Type Boolean>"},
-				{type: "print", message: "<Type Integer>"},
-				{type: "print", message: "<Type Real>"},
-				{type: "print", message: "<Type String>"},
-				{type: "print", message: "<Type String>"},
-				{type: "print", message: "<Type String>"},
-				{type: "print", message: "<Type String>"},
-				{type: "print", message: "<Type String>"},
-				"finished"],
+			{ type: "print", message: "<Type Null>" },
+			{ type: "print", message: "<Type Boolean>" },
+			{ type: "print", message: "<Type Boolean>" },
+			{ type: "print", message: "<Type Integer>" },
+			{ type: "print", message: "<Type Real>" },
+			{ type: "print", message: "<Type String>" },
+			{ type: "print", message: "<Type String>" },
+			{ type: "print", message: "<Type String>" },
+			{ type: "print", message: "<Type String>" },
+			{ type: "print", message: "<Type String>" },
+			"finished",
+		],
 	},
 	{
 		name: "incomplete real number format 1",
@@ -68,8 +75,9 @@ export  const tests:Array<TscriptTest> = [
 			print(.5);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-42"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-42" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "incomplete real number format 2",
@@ -78,8 +86,9 @@ export  const tests:Array<TscriptTest> = [
 			print(5.);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-1"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-1" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "incomplete real number format 3",
@@ -88,8 +97,9 @@ export  const tests:Array<TscriptTest> = [
 			print(5e);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-1"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-1" },
+			"parsing failed",
+		],
 	},
 
 	{
@@ -103,8 +113,7 @@ export  const tests:Array<TscriptTest> = [
 			setEventHandler("canvas.mouseup", function(event) { quitEventMode("up"); });
 			print(enterEventMode());
 		`,
-		events:
-		[
+		events: [
 			{
 				name: "canvas.mousedown",
 				type: "canvas.MouseButtonEvent",
@@ -113,7 +122,7 @@ export  const tests:Array<TscriptTest> = [
 					y: 25,
 					button: 0,
 					buttons: [true, false, false],
-					shift : false,
+					shift: false,
 					control: true,
 					alt: false,
 					meta: false,
@@ -127,7 +136,7 @@ export  const tests:Array<TscriptTest> = [
 					y: 25,
 					button: 0,
 					buttons: [true, false, false],
-					shift : false,
+					shift: false,
 					control: true,
 					alt: false,
 					meta: false,
@@ -141,7 +150,7 @@ export  const tests:Array<TscriptTest> = [
 					y: 25,
 					button: 0,
 					buttons: [true, false, false],
-					shift : false,
+					shift: false,
 					control: true,
 					alt: false,
 					meta: false,
@@ -149,15 +158,17 @@ export  const tests:Array<TscriptTest> = [
 			},
 		],
 		expectation: [
-				{type: "print", message: "down"},
-				{type: "print", message: "up"},
-				"finished"],
+			{ type: "print", message: "down" },
+			{ type: "print", message: "up" },
+			"finished",
+		],
 	},
 
 	// basic language constructs
 	{
 		name: "blocks, variables, scoping, and assignment",
-		description: "test statements blocks and how they affect scoping of variables",
+		description:
+			"test statements blocks and how they affect scoping of variables",
 		code: `
 			var a = 0, b = 1;
 			{
@@ -172,13 +183,14 @@ export  const tests:Array<TscriptTest> = [
 			print(b);
 		`,
 		expectation: [
-				{type: "print", message: "0"},
-				{type: "print", message: "2"},
-				{type: "print", message: "1"},
-				{type: "print", message: "1"},
-				{type: "print", message: "0"},
-				{type: "print", message: "1"},
-				"finished"],
+			{ type: "print", message: "0" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "1" },
+			{ type: "print", message: "1" },
+			{ type: "print", message: "0" },
+			{ type: "print", message: "1" },
+			"finished",
+		],
 	},
 	{
 		name: "expressions and operator precedence",
@@ -200,14 +212,15 @@ export  const tests:Array<TscriptTest> = [
 			print(false and not false or true and true);
 		`,
 		expectation: [
-				{type: "print", message: "-1"},
-				{type: "print", message: "12"},
-				{type: "print", message: "12"},
-				{type: "print", message: "-16"},
-				{type: "print", message: "132"},
-				{type: "print", message: "64"},
-				{type: "print", message: "true"},
-				"finished"],
+			{ type: "print", message: "-1" },
+			{ type: "print", message: "12" },
+			{ type: "print", message: "12" },
+			{ type: "print", message: "-16" },
+			{ type: "print", message: "132" },
+			{ type: "print", message: "64" },
+			{ type: "print", message: "true" },
+			"finished",
+		],
 	},
 
 	// control structures
@@ -219,9 +232,10 @@ export  const tests:Array<TscriptTest> = [
 			if false then print("then"); else print("else");
 		`,
 		expectation: [
-				{type: "print", message: "then"},
-				{type: "print", message: "else"},
-				"finished"],
+			{ type: "print", message: "then" },
+			{ type: "print", message: "else" },
+			"finished",
+		],
 	},
 	{
 		name: "for-loop",
@@ -234,16 +248,17 @@ export  const tests:Array<TscriptTest> = [
 			for var i in [] do print(i);
 		`,
 		expectation: [
-				{type: "print", message: "."},
-				{type: "print", message: "."},
-				{type: "print", message: "."},
-				{type: "print", message: "5"},
-				{type: "print", message: "6"},
-				{type: "print", message: "7"},
-				{type: "print", message: "true"},
-				{type: "print", message: "null"},
-				{type: "print", message: "p"},
-				"finished"],
+			{ type: "print", message: "." },
+			{ type: "print", message: "." },
+			{ type: "print", message: "." },
+			{ type: "print", message: "5" },
+			{ type: "print", message: "6" },
+			{ type: "print", message: "7" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "null" },
+			{ type: "print", message: "p" },
+			"finished",
+		],
 	},
 	{
 		name: "do-while-loop",
@@ -254,11 +269,12 @@ export  const tests:Array<TscriptTest> = [
 			do { print(i); i += 1; } while i < 3;
 		`,
 		expectation: [
-				{type: "print", message: "."},
-				{type: "print", message: "0"},
-				{type: "print", message: "1"},
-				{type: "print", message: "2"},
-				"finished"],
+			{ type: "print", message: "." },
+			{ type: "print", message: "0" },
+			{ type: "print", message: "1" },
+			{ type: "print", message: "2" },
+			"finished",
+		],
 	},
 	{
 		name: "while-do-loop",
@@ -269,10 +285,11 @@ export  const tests:Array<TscriptTest> = [
 			while i < 3 do { print(i); i += 1; }
 		`,
 		expectation: [
-				{type: "print", message: "0"},
-				{type: "print", message: "1"},
-				{type: "print", message: "2"},
-				"finished"],
+			{ type: "print", message: "0" },
+			{ type: "print", message: "1" },
+			{ type: "print", message: "2" },
+			"finished",
+		],
 	},
 	{
 		name: "break",
@@ -287,10 +304,11 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "print", message: "0"},
-				{type: "print", message: "1"},
-				{type: "print", message: "2"},
-				"finished"],
+			{ type: "print", message: "0" },
+			{ type: "print", message: "1" },
+			{ type: "print", message: "2" },
+			"finished",
+		],
 	},
 	{
 		name: "continue",
@@ -303,11 +321,12 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "print", message: "0"},
-				{type: "print", message: "1"},
-				{type: "print", message: "3"},
-				{type: "print", message: "4"},
-				"finished"],
+			{ type: "print", message: "0" },
+			{ type: "print", message: "1" },
+			{ type: "print", message: "3" },
+			{ type: "print", message: "4" },
+			"finished",
+		],
 	},
 	{
 		name: "return",
@@ -327,11 +346,12 @@ export  const tests:Array<TscriptTest> = [
 			g();
 		`,
 		expectation: [
-				{type: "print", message: "4"},
-				{type: "print", message: "4"},
-				{type: "print", message: "9"},
-				{type: "print", message: "a"},
-				"finished"],
+			{ type: "print", message: "4" },
+			{ type: "print", message: "4" },
+			{ type: "print", message: "9" },
+			{ type: "print", message: "a" },
+			"finished",
+		],
 	},
 	{
 		name: "exceptions",
@@ -353,9 +373,10 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "print", message: "a"},
-				{type: "print", message: "foo"},
-				"finished"],
+			{ type: "print", message: "a" },
+			{ type: "print", message: "foo" },
+			"finished",
+		],
 	},
 
 	// operators
@@ -367,9 +388,10 @@ export  const tests:Array<TscriptTest> = [
 			print(+5.25);
 		`,
 		expectation: [
-				{type: "print", message: "5"},
-				{type: "print", message: "5.25"},
-				"finished"],
+			{ type: "print", message: "5" },
+			{ type: "print", message: "5.25" },
+			"finished",
+		],
 	},
 	{
 		name: "unary operator -",
@@ -379,9 +401,10 @@ export  const tests:Array<TscriptTest> = [
 			print(-5.25);
 		`,
 		expectation: [
-				{type: "print", message: "-5"},
-				{type: "print", message: "-5.25"},
-				"finished"],
+			{ type: "print", message: "-5" },
+			{ type: "print", message: "-5.25" },
+			"finished",
+		],
 	},
 	{
 		name: "unary operator not",
@@ -391,13 +414,15 @@ export  const tests:Array<TscriptTest> = [
 			print(not true);
 		`,
 		expectation: [
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				"finished"],
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator +",
-		description: "test binary operator + on supported types and type mixtures",
+		description:
+			"test binary operator + on supported types and type mixtures",
 		code: `
 			print(3 + 4);
 			print(3 + 4.25);
@@ -410,20 +435,22 @@ export  const tests:Array<TscriptTest> = [
 			print(1e308 + 1e308);
 		`,
 		expectation: [
-				{type: "print", message: "7"},
-				{type: "print", message: "7.25"},
-				{type: "print", message: "7.25"},
-				{type: "print", message: "7.5"},
-				{type: "print", message: "7.5a"},
-				{type: "print", message: "a3.254.25"},
-				{type: "print", message: "a2:5"},
-				{type: "print", message: "-2147483648"},
-				{type: "print", message: "Infinity"},
-				"finished"],
+			{ type: "print", message: "7" },
+			{ type: "print", message: "7.25" },
+			{ type: "print", message: "7.25" },
+			{ type: "print", message: "7.5" },
+			{ type: "print", message: "7.5a" },
+			{ type: "print", message: "a3.254.25" },
+			{ type: "print", message: "a2:5" },
+			{ type: "print", message: "-2147483648" },
+			{ type: "print", message: "Infinity" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator -",
-		description: "test binary operator - on supported types and type mixtures",
+		description:
+			"test binary operator - on supported types and type mixtures",
 		code: `
 			print(3 - 4);
 			print(3 - 4.25);
@@ -433,17 +460,19 @@ export  const tests:Array<TscriptTest> = [
 			print(-1e308 - 1e308);
 		`,
 		expectation: [
-				{type: "print", message: "-1"},
-				{type: "print", message: "-1.25"},
-				{type: "print", message: "-0.75"},
-				{type: "print", message: "-1"},
-				{type: "print", message: "2147483647"},
-				{type: "print", message: "-Infinity"},
-				"finished"],
+			{ type: "print", message: "-1" },
+			{ type: "print", message: "-1.25" },
+			{ type: "print", message: "-0.75" },
+			{ type: "print", message: "-1" },
+			{ type: "print", message: "2147483647" },
+			{ type: "print", message: "-Infinity" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator *",
-		description: "test binary operator * on supported types and type mixtures",
+		description:
+			"test binary operator * on supported types and type mixtures",
 		code: `
 			print(3 * 4);
 			print(3 * 4.25);
@@ -453,17 +482,19 @@ export  const tests:Array<TscriptTest> = [
 			print(65535.0 * 65536);
 		`,
 		expectation: [
-				{type: "print", message: "12"},
-				{type: "print", message: "12.75"},
-				{type: "print", message: "13"},
-				{type: "print", message: "15.75"},
-				{type: "print", message: "-65536"},
-				{type: "print", message: "4294901760"},
-				"finished"],
+			{ type: "print", message: "12" },
+			{ type: "print", message: "12.75" },
+			{ type: "print", message: "13" },
+			{ type: "print", message: "15.75" },
+			{ type: "print", message: "-65536" },
+			{ type: "print", message: "4294901760" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator /",
-		description: "test binary operator / on supported types and type mixtures",
+		description:
+			"test binary operator / on supported types and type mixtures",
 		code: `
 			print(3 / 4);
 			print(3 / 4.0);
@@ -475,19 +506,21 @@ export  const tests:Array<TscriptTest> = [
 			print(1e-200 / 1e200);
 		`,
 		expectation: [
-				{type: "print", message: "0.75"},
-				{type: "print", message: "0.75"},
-				{type: "print", message: "0.75"},
-				{type: "print", message: "0.75"},
-				{type: "print", message: "Infinity"},
-				{type: "print", message: "-Infinity"},
-				{type: "print", message: "Infinity"},
-				{type: "print", message: "0"},
-				"finished"],
+			{ type: "print", message: "0.75" },
+			{ type: "print", message: "0.75" },
+			{ type: "print", message: "0.75" },
+			{ type: "print", message: "0.75" },
+			{ type: "print", message: "Infinity" },
+			{ type: "print", message: "-Infinity" },
+			{ type: "print", message: "Infinity" },
+			{ type: "print", message: "0" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator //",
-		description: "test binary operator // on supported types and type mixtures",
+		description:
+			"test binary operator // on supported types and type mixtures",
 		code: `
 			print(11 // 4);
 			print(-11 // 4);
@@ -503,23 +536,25 @@ export  const tests:Array<TscriptTest> = [
 			print(1.0 // -0.0);
 		`,
 		expectation: [
-				{type: "print", message: "2"},
-				{type: "print", message: "-3"},
-				{type: "print", message: "-3"},
-				{type: "print", message: "2"},
-				{type: "print", message: "2"},
-				{type: "print", message: "2"},
-				{type: "print", message: "2"},
-				{type: "print", message: "-3"},
-				{type: "print", message: "-3"},
-				{type: "print", message: "2"},
-				{type: "print", message: "Infinity"},
-				{type: "print", message: "-Infinity"},
-				"finished"],
+			{ type: "print", message: "2" },
+			{ type: "print", message: "-3" },
+			{ type: "print", message: "-3" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "-3" },
+			{ type: "print", message: "-3" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "Infinity" },
+			{ type: "print", message: "-Infinity" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator %",
-		description: "test binary operator % on supported types and type mixtures",
+		description:
+			"test binary operator % on supported types and type mixtures",
 		code: `
 			print(11 % 4);
 			print(-11 % 4);
@@ -533,21 +568,23 @@ export  const tests:Array<TscriptTest> = [
 			print(-11.5 % -4.5);
 		`,
 		expectation: [
-				{type: "print", message: "3"},
-				{type: "print", message: "1"},
-				{type: "print", message: "1"},
-				{type: "print", message: "3"},
-				{type: "print", message: "2"},
-				{type: "print", message: "3.5"},
-				{type: "print", message: "2.5"},
-				{type: "print", message: "2"},
-				{type: "print", message: "2"},
-				{type: "print", message: "2.5"},
-				"finished"],
+			{ type: "print", message: "3" },
+			{ type: "print", message: "1" },
+			{ type: "print", message: "1" },
+			{ type: "print", message: "3" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "3.5" },
+			{ type: "print", message: "2.5" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "2.5" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator ^",
-		description: "test binary operator * on supported types and type mixtures",
+		description:
+			"test binary operator * on supported types and type mixtures",
 		code: `
 			print(256 ^ 5);
 			print(256.0 ^ 5.0);
@@ -559,19 +596,21 @@ export  const tests:Array<TscriptTest> = [
 			print(4 ^ -2.0);
 		`,
 		expectation: [
-				{type: "print", message: "0"},
-				{type: "print", message: "1099511627776"},
-				{type: "print", message: "1099511627776"},
-				{type: "print", message: "Infinity"},
-				{type: "print", message: "16"},
-				{type: "print", message: "0.0625"},
-				{type: "print", message: "0.0625"},
-				{type: "print", message: "0.0625"},
-				"finished"],
+			{ type: "print", message: "0" },
+			{ type: "print", message: "1099511627776" },
+			{ type: "print", message: "1099511627776" },
+			{ type: "print", message: "Infinity" },
+			{ type: "print", message: "16" },
+			{ type: "print", message: "0.0625" },
+			{ type: "print", message: "0.0625" },
+			{ type: "print", message: "0.0625" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator ==",
-		description: "test binary operator == on supported types and type mixtures",
+		description:
+			"test binary operator == on supported types and type mixtures",
 		code: `
 			print(null == null);
 			print(true == false);
@@ -610,45 +649,47 @@ export  const tests:Array<TscriptTest> = [
 			print(e == e);
 		`,
 		expectation: [
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				"finished"],
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator !=",
-		description: "test binary operator != on supported types and type mixtures",
+		description:
+			"test binary operator != on supported types and type mixtures",
 		code: `
 			print(null != null);
 			print(true != false);
@@ -687,45 +728,47 @@ export  const tests:Array<TscriptTest> = [
 			print(e != e);
 		`,
 		expectation: [
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				"finished"],
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator <",
-		description: "test binary operator < on supported types and type mixtures",
+		description:
+			"test binary operator < on supported types and type mixtures",
 		code: `
 			print(0 < 0);
 			print(0 < 1);
@@ -744,26 +787,28 @@ export  const tests:Array<TscriptTest> = [
 			print([3,4,"a"] < [3,4,"a"]);
 		`,
 		expectation: [
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				"finished"],
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator <=",
-		description: "test binary operator <= on supported types and type mixtures",
+		description:
+			"test binary operator <= on supported types and type mixtures",
 		code: `
 			print(0 <= 0);
 			print(0 <= 1);
@@ -782,26 +827,28 @@ export  const tests:Array<TscriptTest> = [
 			print([3,4,"a"] <= [3,4,"a"]);
 		`,
 		expectation: [
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				"finished"],
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator >",
-		description: "test binary operator > on supported types and type mixtures",
+		description:
+			"test binary operator > on supported types and type mixtures",
 		code: `
 			print(0 > 0);
 			print(0 > 1);
@@ -820,26 +867,28 @@ export  const tests:Array<TscriptTest> = [
 			print([3,4,"a"] > [3,4,"a"]);
 		`,
 		expectation: [
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				"finished"],
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator >=",
-		description: "test binary operator >= on supported types and type mixtures",
+		description:
+			"test binary operator >= on supported types and type mixtures",
 		code: `
 			print(0 >= 0);
 			print(0 >= 1);
@@ -858,22 +907,23 @@ export  const tests:Array<TscriptTest> = [
 			print([3,4,"a"] >= [3,4,"a"]);
 		`,
 		expectation: [
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				"finished"],
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator and",
@@ -886,12 +936,13 @@ export  const tests:Array<TscriptTest> = [
 			print(-77 and 38);
 		`,
 		expectation: [
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "34"},
-				"finished"],
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "34" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator or",
@@ -904,12 +955,13 @@ export  const tests:Array<TscriptTest> = [
 			print(-77 or 38);
 		`,
 		expectation: [
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "-73"},
-				"finished"],
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "-73" },
+			"finished",
+		],
 	},
 	{
 		name: "binary operator xor",
@@ -922,12 +974,13 @@ export  const tests:Array<TscriptTest> = [
 			print(-77 xor 38);
 		`,
 		expectation: [
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "-107"},
-				"finished"],
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "-107" },
+			"finished",
+		],
 	},
 
 	// built-in types and their member functions
@@ -938,9 +991,7 @@ export  const tests:Array<TscriptTest> = [
 			var n = Null();
 			print(n == null);
 		`,
-		expectation: [
-				{type: "print", message: "true"},
-				"finished"],
+		expectation: [{ type: "print", message: "true" }, "finished"],
 	},
 	{
 		name: "type Boolean",
@@ -950,9 +1001,7 @@ export  const tests:Array<TscriptTest> = [
 			var f = Boolean(false);
 			print(t == true and f == false);
 		`,
-		expectation: [
-				{type: "print", message: "true"},
-				"finished"],
+		expectation: [{ type: "print", message: "true" }, "finished"],
 	},
 	{
 		name: "type Integer",
@@ -963,9 +1012,7 @@ export  const tests:Array<TscriptTest> = [
 			var k = Integer(-7.9);
 			print(i == 7 and j == 7 and k == -8);
 		`,
-		expectation: [
-				{type: "print", message: "true"},
-				"finished"],
+		expectation: [{ type: "print", message: "true" }, "finished"],
 	},
 	{
 		name: "type Real",
@@ -979,10 +1026,11 @@ export  const tests:Array<TscriptTest> = [
 			print(n == 0.0/0.0 and not n.isFinite() and not n.isInfinite() and     n.isNan());
 		`,
 		expectation: [
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				"finished"],
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			"finished",
+		],
 	},
 	{
 		name: "type String",
@@ -1000,13 +1048,14 @@ export  const tests:Array<TscriptTest> = [
 			print(a + b + c);
 		`,
 		expectation: [
-				{type: "print", message: "11"},
-				{type: "print", message: "2"},
-				{type: "print", message: "9"},
-				{type: "print", message: "[Hello,World]"},
-				{type: "print", message: "ABC"},
-				{type: "print", message: "77.55:10"},
-				"finished"],
+			{ type: "print", message: "11" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "9" },
+			{ type: "print", message: "[Hello,World]" },
+			{ type: "print", message: "ABC" },
+			{ type: "print", message: "77.55:10" },
+			"finished",
+		],
 	},
 	{
 		name: "type Array",
@@ -1034,20 +1083,24 @@ export  const tests:Array<TscriptTest> = [
 			print(Array.concat(a, b));
 		`,
 		expectation: [
-				{type: "print", message: "[4,6,8,10,12]"},
-				{type: "print", message: "5"},
-				{type: "print", message: "6"},
-				{type: "print", message: "6"},
-				{type: "print", message: "14"},
-				{type: "print", message: "15"},
-				{type: "print", message: "15"},
-				{type: "print", message: "[4,6,8,99,10,12]"},
-				{type: "print", message: "[4,99,10,12]"},
-				{type: "print", message: "[4,10,12,99]"},
-				{type: "print", message: "0:4"},
-				{type: "print", message: "[4,10,12,99]"},
-				{type: "print", message: "[4,10,12,99,null,false,true,[],{},5:10]"},
-				"finished"],
+			{ type: "print", message: "[4,6,8,10,12]" },
+			{ type: "print", message: "5" },
+			{ type: "print", message: "6" },
+			{ type: "print", message: "6" },
+			{ type: "print", message: "14" },
+			{ type: "print", message: "15" },
+			{ type: "print", message: "15" },
+			{ type: "print", message: "[4,6,8,99,10,12]" },
+			{ type: "print", message: "[4,99,10,12]" },
+			{ type: "print", message: "[4,10,12,99]" },
+			{ type: "print", message: "0:4" },
+			{ type: "print", message: "[4,10,12,99]" },
+			{
+				type: "print",
+				message: "[4,10,12,99,null,false,true,[],{},5:10]",
+			},
+			"finished",
+		],
 	},
 	{
 		name: "type Dictionary",
@@ -1070,18 +1123,23 @@ export  const tests:Array<TscriptTest> = [
 			print(Dictionary.merge(a, b));
 		`,
 		expectation: [
-				{type: "print", message: "{a:4,b:6,c:8,x:10,y:12}"},
-				{type: "print", message: "5"},
-				{type: "print", message: "6"},
-				{type: "print", message: "10"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "5"},
-				{type: "print", message: "false"},
-				{type: "print", message: "[a,b,c,x,y]"},
-				{type: "print", message: "[4,6,8,10,12]"},
-				{type: "print", message: "{a:4,b:6,c:8,x:null,y:false,z:true,foo:[],bar:{},r:5:10}"},
-				"finished"],
+			{ type: "print", message: "{a:4,b:6,c:8,x:10,y:12}" },
+			{ type: "print", message: "5" },
+			{ type: "print", message: "6" },
+			{ type: "print", message: "10" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "5" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "[a,b,c,x,y]" },
+			{ type: "print", message: "[4,6,8,10,12]" },
+			{
+				type: "print",
+				message:
+					"{a:4,b:6,c:8,x:null,y:false,z:true,foo:[],bar:{},r:5:10}",
+			},
+			"finished",
+		],
 	},
 	{
 		name: "type Function",
@@ -1097,12 +1155,13 @@ export  const tests:Array<TscriptTest> = [
 			print(h(3));
 		`,
 		expectation: [
-				{type: "print", message: "5"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "9"},
-				{type: "print", message: "9"},
-				"finished"],
+			{ type: "print", message: "5" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "9" },
+			{ type: "print", message: "9" },
+			"finished",
+		],
 	},
 	{
 		name: "type Range",
@@ -1123,18 +1182,19 @@ export  const tests:Array<TscriptTest> = [
 			print(a == Range(5, 15));
 		`,
 		expectation: [
-				{type: "print", message: "5:15"},
-				{type: "print", message: "10"},
-				{type: "print", message: "5"},
-				{type: "print", message: "15"},
-				{type: "print", message: "7"},
-				{type: "print", message: "7:11"},
-				{type: "print", message: "15:5"},
-				{type: "print", message: "0"},
-				{type: "print", message: "15"},
-				{type: "print", message: "5"},
-				{type: "print", message: "true"},
-				"finished"],
+			{ type: "print", message: "5:15" },
+			{ type: "print", message: "10" },
+			{ type: "print", message: "5" },
+			{ type: "print", message: "15" },
+			{ type: "print", message: "7" },
+			{ type: "print", message: "7:11" },
+			{ type: "print", message: "15:5" },
+			{ type: "print", message: "0" },
+			{ type: "print", message: "15" },
+			{ type: "print", message: "5" },
+			{ type: "print", message: "true" },
+			"finished",
+		],
 	},
 	{
 		name: "type Type",
@@ -1170,28 +1230,29 @@ export  const tests:Array<TscriptTest> = [
 			print(Type.isDerivedFrom(C, A));
 		`,
 		expectation: [
-				{type: "print", message: "<Type Array>"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "<Type Function>"},
-				{type: "print", message: "<Type Function>"},
-				{type: "print", message: "<Type Type>"},
-				{type: "print", message: "[5,6,7]"},
-				{type: "print", message: "<Type B>"},
-				{type: "print", message: "<Type A>"},
-				{type: "print", message: "<Type A>"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				{type: "print", message: "false"},
-				{type: "print", message: "true"},
-				{type: "print", message: "true"},
-				"finished"],
+			{ type: "print", message: "<Type Array>" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "<Type Function>" },
+			{ type: "print", message: "<Type Function>" },
+			{ type: "print", message: "<Type Type>" },
+			{ type: "print", message: "[5,6,7]" },
+			{ type: "print", message: "<Type B>" },
+			{ type: "print", message: "<Type A>" },
+			{ type: "print", message: "<Type A>" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "false" },
+			{ type: "print", message: "true" },
+			{ type: "print", message: "true" },
+			"finished",
+		],
 	},
 
 	// namespaces
@@ -1234,16 +1295,17 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "print", message: "1"},
-				{type: "print", message: "1"},
-				{type: "print", message: "2"},
-				{type: "print", message: "2"},
-				{type: "print", message: "1"},
-				{type: "print", message: "2"},
-				{type: "print", message: "1"},
-				{type: "print", message: "2"},
-				{type: "print", message: "2"},
-				"finished"],
+			{ type: "print", message: "1" },
+			{ type: "print", message: "1" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "1" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "1" },
+			{ type: "print", message: "2" },
+			{ type: "print", message: "2" },
+			"finished",
+		],
 	},
 
 	// functions, including lambdas
@@ -1265,11 +1327,12 @@ export  const tests:Array<TscriptTest> = [
 			print(fac(5));
 		`,
 		expectation: [
-				{type: "print", message: "3"},
-				{type: "print", message: "9"},
-				{type: "print", message: "9"},
-				{type: "print", message: "120"},
-				"finished"],
+			{ type: "print", message: "3" },
+			{ type: "print", message: "9" },
+			{ type: "print", message: "9" },
+			{ type: "print", message: "120" },
+			"finished",
+		],
 	},
 
 	// classes
@@ -1350,13 +1413,14 @@ export  const tests:Array<TscriptTest> = [
 			print(g.get());
 		`,
 		expectation: [
-				{type: "print", message: "6"},
-				{type: "print", message: "7"},
-				{type: "print", message: "8"},
-				{type: "print", message: "3 3 3"},
-				{type: "print", message: "42"},
-				{type: "print", message: "43"},
-				"finished"],
+			{ type: "print", message: "6" },
+			{ type: "print", message: "7" },
+			{ type: "print", message: "8" },
+			{ type: "print", message: "3 3 3" },
+			{ type: "print", message: "42" },
+			{ type: "print", message: "43" },
+			"finished",
+		],
 	},
 
 	// core functions
@@ -1373,9 +1437,7 @@ export  const tests:Array<TscriptTest> = [
 			f();
 			print("c");
 		`,
-		expectation: [
-				{type: "print", message: "a"},
-				"finished"],
+		expectation: [{ type: "print", message: "a" }, "finished"],
 	},
 	{
 		name: "assert",
@@ -1391,9 +1453,10 @@ export  const tests:Array<TscriptTest> = [
 			print("c");
 		`,
 		expectation: [
-				{type: "print", message: "a"},
-				{type: "error", href: "#/errors/user/ue-1"},
-				"error"],
+			{ type: "print", message: "a" },
+			{ type: "error", href: "#/errors/user/ue-1" },
+			"error",
+		],
 	},
 	{
 		name: "error",
@@ -1409,9 +1472,10 @@ export  const tests:Array<TscriptTest> = [
 			print("c");
 		`,
 		expectation: [
-				{type: "print", message: "a"},
-				{type: "error", href: "#/errors/user/ue-2"},
-				"error"],
+			{ type: "print", message: "a" },
+			{ type: "error", href: "#/errors/user/ue-2" },
+			"error",
+		],
 	},
 	{
 		name: "same",
@@ -1423,9 +1487,10 @@ export  const tests:Array<TscriptTest> = [
 			print(same(n, null));
 		`,
 		expectation: [
-				{type: "print", message: "true"},
-				{type: "print", message: "false"},
-				"finished"],
+			{ type: "print", message: "true" },
+			{ type: "print", message: "false" },
+			"finished",
+		],
 	},
 	{
 		name: "version",
@@ -1436,9 +1501,13 @@ export  const tests:Array<TscriptTest> = [
 			print(v["full"]);
 		`,
 		expectation: [
-				{type: "print", message: "[type,major,minor,patch,day,month,year,full]"},
-				{type: "print", message: Version.full()},
-				"finished"],
+			{
+				type: "print",
+				message: "[type,major,minor,patch,day,month,year,full]",
+			},
+			{ type: "print", message: Version.full() },
+			"finished",
+		],
 	},
 	{
 		name: "print",
@@ -1446,9 +1515,7 @@ export  const tests:Array<TscriptTest> = [
 		code: `
 			print(42);
 		`,
-		expectation: [
-				{type: "print", message: "42"},
-				"finished"],
+		expectation: [{ type: "print", message: "42" }, "finished"],
 	},
 	{
 		name: "alert",
@@ -1456,9 +1523,7 @@ export  const tests:Array<TscriptTest> = [
 		code: `
 			alert(42);
 		`,
-		expectation: [
-				{type: "alert", message: "42"},
-				"finished"],
+		expectation: [{ type: "alert", message: "42" }, "finished"],
 	},
 	{
 		name: "confirm",
@@ -1469,11 +1534,12 @@ export  const tests:Array<TscriptTest> = [
 		`,
 		input: [true, false],
 		expectation: [
-				{type: "confirm", message: "foo"},
-				{type: "print", message: "true"},
-				{type: "confirm", message: "bar"},
-				{type: "print", message: "false"},
-				"finished"],
+			{ type: "confirm", message: "foo" },
+			{ type: "print", message: "true" },
+			{ type: "confirm", message: "bar" },
+			{ type: "print", message: "false" },
+			"finished",
+		],
 	},
 	{
 		name: "prompt",
@@ -1483,9 +1549,10 @@ export  const tests:Array<TscriptTest> = [
 		`,
 		input: ["bar"],
 		expectation: [
-				{type: "prompt", message: "foo"},
-				{type: "print", message: "bar"},
-				"finished"],
+			{ type: "prompt", message: "foo" },
+			{ type: "print", message: "bar" },
+			"finished",
+		],
 	},
 	{
 		name: "wait",
@@ -1497,8 +1564,7 @@ export  const tests:Array<TscriptTest> = [
 			var d = t2 - t1;
 			if d < 50 or d > 200 then print("wrong");
 		`,
-		expectation: [
-				"finished"],
+		expectation: ["finished"],
 	},
 	{
 		name: "time",
@@ -1507,8 +1573,7 @@ export  const tests:Array<TscriptTest> = [
 			var t = time();
 			if t < 1555252000000.0 or t > 3000000000000.0 then print("implausible");
 		`,
-		expectation: [
-				"finished"],
+		expectation: ["finished"],
 	},
 	{
 		name: "exists",
@@ -1516,8 +1581,7 @@ export  const tests:Array<TscriptTest> = [
 		code: `
 			if exists("implausible-filename-19fe94e375c0b0a1749ad05f") then print("implausible");
 		`,
-		expectation: [
-				"finished"],
+		expectation: ["finished"],
 	},
 	{
 		name: "load and save",
@@ -1527,9 +1591,7 @@ export  const tests:Array<TscriptTest> = [
 			var d = load("unittest-data");
 			print(d);
 		`,
-		expectation: [
-				{type: "print", message: "{a:3,b:3.5}"},
-				"finished"],
+		expectation: [{ type: "print", message: "{a:3,b:3.5}" }, "finished"],
 	},
 	{
 		name: "deepcopy",
@@ -1542,9 +1604,10 @@ export  const tests:Array<TscriptTest> = [
 			print(y);
 		`,
 		expectation: [
-				{type: "print", message: "{a:3,b:[4,{c:false}]}"},
-				{type: "print", message: "{a:3,b:[4,{c:true}]}"},
-				"finished"],
+			{ type: "print", message: "{a:3,b:[4,{c:false}]}" },
+			{ type: "print", message: "{a:3,b:[4,{c:true}]}" },
+			"finished",
+		],
 	},
 	{
 		name: "event handling",
@@ -1561,11 +1624,12 @@ export  const tests:Array<TscriptTest> = [
 			print(enterEventMode());
 		`,
 		expectation: [
-				{type: "print", message: "tick"},
-				{type: "print", message: "tick"},
-				{type: "print", message: "tick"},
-				{type: "print", message: "bye"},
-				"finished"],
+			{ type: "print", message: "tick" },
+			{ type: "print", message: "tick" },
+			{ type: "print", message: "tick" },
+			{ type: "print", message: "bye" },
+			"finished",
+		],
 	},
 
 	// math functions
@@ -1618,9 +1682,10 @@ export  const tests:Array<TscriptTest> = [
 			for 0:1000 do if random() >= 1 then print("random >= 1");
 		`,
 		expectation: [
-				{type: "print", message: "A"},
-				{type: "print", message: "a"},
-				"finished"],
+			{ type: "print", message: "A" },
+			{ type: "print", message: "a" },
+			"finished",
+		],
 	},
 
 	// turtle functions
@@ -1825,14 +1890,13 @@ export  const tests:Array<TscriptTest> = [
 			setEventHandler("canvas.keydown", onKeyDown);
 			enterEventMode();
 		`,
-		events:
-		[
+		events: [
 			{
 				name: "canvas.keydown",
 				type: "canvas.KeyboardEvent",
 				attr: {
 					key: "ArrowLeft",
-					shift : false,
+					shift: false,
 					control: true,
 					alt: false,
 					meta: false,
@@ -1840,9 +1904,10 @@ export  const tests:Array<TscriptTest> = [
 			},
 		],
 		expectation: [
-				{type: "print", message: "ArrowLeft"},
-				{type: "print", message: "control"},
-				"finished"],
+			{ type: "print", message: "ArrowLeft" },
+			{ type: "print", message: "control" },
+			"finished",
+		],
 	},
 	{
 		name: "keyup",
@@ -1860,14 +1925,13 @@ export  const tests:Array<TscriptTest> = [
 			setEventHandler("canvas.keyup", onKeyUp);
 			enterEventMode();
 		`,
-		events:
-		[
+		events: [
 			{
 				name: "canvas.keyup",
 				type: "canvas.KeyboardEvent",
 				attr: {
 					key: "ArrowLeft",
-					shift : false,
+					shift: false,
 					control: true,
 					alt: false,
 					meta: false,
@@ -1875,9 +1939,10 @@ export  const tests:Array<TscriptTest> = [
 			},
 		],
 		expectation: [
-				{type: "print", message: "ArrowLeft"},
-				{type: "print", message: "control"},
-				"finished"],
+			{ type: "print", message: "ArrowLeft" },
+			{ type: "print", message: "control" },
+			"finished",
+		],
 	},
 	{
 		name: "mousedown",
@@ -1897,8 +1962,7 @@ export  const tests:Array<TscriptTest> = [
 			setEventHandler("canvas.mousedown", onMouseDown);
 			enterEventMode();
 		`,
-		events:
-		[
+		events: [
 			{
 				name: "canvas.mousedown",
 				type: "canvas.MouseButtonEvent",
@@ -1907,7 +1971,7 @@ export  const tests:Array<TscriptTest> = [
 					y: 25,
 					button: 0,
 					buttons: [true, false, false],
-					shift : false,
+					shift: false,
 					control: true,
 					alt: false,
 					meta: false,
@@ -1915,11 +1979,12 @@ export  const tests:Array<TscriptTest> = [
 			},
 		],
 		expectation: [
-				{type: "print", message: "50,25"},
-				{type: "print", message: "0"},
-				{type: "print", message: "[true,false,false]"},
-				{type: "print", message: "control"},
-				"finished"],
+			{ type: "print", message: "50,25" },
+			{ type: "print", message: "0" },
+			{ type: "print", message: "[true,false,false]" },
+			{ type: "print", message: "control" },
+			"finished",
+		],
 	},
 	{
 		name: "mouseup",
@@ -1939,8 +2004,7 @@ export  const tests:Array<TscriptTest> = [
 			setEventHandler("canvas.mouseup", onMouseUp);
 			enterEventMode();
 		`,
-		events:
-		[
+		events: [
 			{
 				name: "canvas.mouseup",
 				type: "canvas.MouseButtonEvent",
@@ -1949,7 +2013,7 @@ export  const tests:Array<TscriptTest> = [
 					y: 25,
 					button: 0,
 					buttons: [true, false, false],
-					shift : false,
+					shift: false,
 					control: true,
 					alt: false,
 					meta: false,
@@ -1957,11 +2021,12 @@ export  const tests:Array<TscriptTest> = [
 			},
 		],
 		expectation: [
-				{type: "print", message: "50,25"},
-				{type: "print", message: "0"},
-				{type: "print", message: "[true,false,false]"},
-				{type: "print", message: "control"},
-				"finished"],
+			{ type: "print", message: "50,25" },
+			{ type: "print", message: "0" },
+			{ type: "print", message: "[true,false,false]" },
+			{ type: "print", message: "control" },
+			"finished",
+		],
 	},
 	{
 		name: "mousemove",
@@ -1980,8 +2045,7 @@ export  const tests:Array<TscriptTest> = [
 			setEventHandler("canvas.mousemove", onMouseMove);
 			enterEventMode();
 		`,
-		events:
-		[
+		events: [
 			{
 				name: "canvas.mousemove",
 				type: "canvas.MouseMoveEvent",
@@ -1989,7 +2053,7 @@ export  const tests:Array<TscriptTest> = [
 					x: 50,
 					y: 25,
 					buttons: [true, false, false],
-					shift : false,
+					shift: false,
 					control: true,
 					alt: false,
 					meta: false,
@@ -1997,10 +2061,11 @@ export  const tests:Array<TscriptTest> = [
 			},
 		],
 		expectation: [
-				{type: "print", message: "50,25"},
-				{type: "print", message: "[true,false,false]"},
-				{type: "print", message: "control"},
-				"finished"],
+			{ type: "print", message: "50,25" },
+			{ type: "print", message: "[true,false,false]" },
+			{ type: "print", message: "control" },
+			"finished",
+		],
 	},
 	{
 		name: "mouseout",
@@ -2014,17 +2079,14 @@ export  const tests:Array<TscriptTest> = [
 			setEventHandler("canvas.mouseout", onMouseOut);
 			enterEventMode();
 		`,
-		events:
-		[
+		events: [
 			{
 				name: "canvas.mouseout",
 				type: "Null",
-				attr: { },
+				attr: {},
 			},
 		],
-		expectation: [
-				{type: "print", message: "null"},
-				"finished"],
+		expectation: [{ type: "print", message: "null" }, "finished"],
 	},
 	{
 		name: "resize",
@@ -2039,8 +2101,7 @@ export  const tests:Array<TscriptTest> = [
 			setEventHandler("canvas.resize", onResize);
 			enterEventMode();
 		`,
-		events:
-		[
+		events: [
 			{
 				name: "canvas.resize",
 				type: "canvas.ResizeEvent",
@@ -2051,9 +2112,10 @@ export  const tests:Array<TscriptTest> = [
 			},
 		],
 		expectation: [
-				{type: "print", message: "50"},
-				{type: "print", message: "25"},
-				"finished"],
+			{ type: "print", message: "50" },
+			{ type: "print", message: "25" },
+			"finished",
+		],
 	},
 	{
 		name: "audio",
@@ -2064,7 +2126,10 @@ export  const tests:Array<TscriptTest> = [
 			samples.push("hello");
 			var ma = MonoAudio(samples, 48000);
 `,
-		expectation: [{type: "error", href: "#/errors/argument-mismatch/am-44"}, "error"],
+		expectation: [
+			{ type: "error", href: "#/errors/argument-mismatch/am-44" },
+			"error",
+		],
 	},
 
 	// syntax errors
@@ -2075,8 +2140,9 @@ export  const tests:Array<TscriptTest> = [
 			var r = 1.23E*88;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-1"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-1" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-2",
@@ -2085,8 +2151,9 @@ export  const tests:Array<TscriptTest> = [
 			var s = "hello;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-2"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-2" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-3",
@@ -2095,8 +2162,9 @@ export  const tests:Array<TscriptTest> = [
 			var s = "hello\\u20world";
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-3"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-3" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-4",
@@ -2105,8 +2173,9 @@ export  const tests:Array<TscriptTest> = [
 			var s = "hello\\yworld";
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-4"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-4" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-5",
@@ -2115,8 +2184,9 @@ export  const tests:Array<TscriptTest> = [
 			@;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-5"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-5" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-6",
@@ -2125,8 +2195,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = super.a;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-6"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-6" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-7",
@@ -2144,8 +2215,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-7"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-7" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-8",
@@ -2166,8 +2238,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-8"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-8" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-9",
@@ -2186,8 +2259,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-9"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-9" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-10",
@@ -2205,8 +2279,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-10"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-10" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-11",
@@ -2219,8 +2294,9 @@ export  const tests:Array<TscriptTest> = [
 			var b = A.7;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-11"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-11" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-13",
@@ -2235,8 +2311,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-13"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-13" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-14",
@@ -2247,8 +2324,9 @@ export  const tests:Array<TscriptTest> = [
 			f(b=2, 7);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-14"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-14" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-15",
@@ -2257,8 +2335,9 @@ export  const tests:Array<TscriptTest> = [
 			math.atan2(1, 2];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-15"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-15" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-16",
@@ -2267,8 +2346,9 @@ export  const tests:Array<TscriptTest> = [
 			13();
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-16"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-16" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-21",
@@ -2278,8 +2358,9 @@ export  const tests:Array<TscriptTest> = [
 			+a = 3;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-21"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-21" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-22",
@@ -2288,8 +2369,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = (3 + 4;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-22"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-22" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-23",
@@ -2298,8 +2380,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = 2147483648;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-23"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-23" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-24",
@@ -2308,8 +2391,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = [1, 2, 3;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-24"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-24" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-25",
@@ -2318,8 +2402,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = []
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-25"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-25" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-26",
@@ -2328,8 +2413,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = {x: 8, y: 9, y: 10};
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-26"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-26" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-27",
@@ -2338,8 +2424,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = {x: 8, y: 9;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-27"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-27" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-28",
@@ -2348,8 +2435,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = {x: 8, y: 9,
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-28"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-28" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-29",
@@ -2358,8 +2446,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = {x: 8, y: 9, z
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-29"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-29" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-30",
@@ -2368,8 +2457,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = {x: 8, y: 9, z: 10}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-30"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-30" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-31",
@@ -2379,8 +2469,9 @@ export  const tests:Array<TscriptTest> = [
 			var f = function[a, b (x){};
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-31"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-31" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-32",
@@ -2390,8 +2481,9 @@ export  const tests:Array<TscriptTest> = [
 			var f = function[for](x){};
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-32"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-32" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-33",
@@ -2400,8 +2492,9 @@ export  const tests:Array<TscriptTest> = [
 			function f(for) {}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-33"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-33" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-35",
@@ -2410,8 +2503,9 @@ export  const tests:Array<TscriptTest> = [
 			var f = function {};
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-35"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-35" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-36",
@@ -2420,8 +2514,9 @@ export  const tests:Array<TscriptTest> = [
 			function f;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-36"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-36" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-37",
@@ -2430,8 +2525,9 @@ export  const tests:Array<TscriptTest> = [
 			function f(a;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-37"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-37" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-38",
@@ -2440,8 +2536,9 @@ export  const tests:Array<TscriptTest> = [
 			function f(a = math.sqrt(2)) {};
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-38"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-38" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-40",
@@ -2450,8 +2547,9 @@ export  const tests:Array<TscriptTest> = [
 			function f(a = 2*3+4);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-40"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-40" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-41",
@@ -2460,8 +2558,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = 2 * do;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-41"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-41" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-42",
@@ -2470,8 +2569,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = 2 * ;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-42"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-42" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-43",
@@ -2481,8 +2581,9 @@ export  const tests:Array<TscriptTest> = [
 			var b = a.do;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-43"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-43" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-44",
@@ -2492,8 +2593,9 @@ export  const tests:Array<TscriptTest> = [
 			var b = a[7;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-44"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-44" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-47-1",
@@ -2502,8 +2604,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = this;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-47"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-47" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-47-2",
@@ -2517,8 +2620,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-47"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-47" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-48",
@@ -2528,8 +2632,9 @@ export  const tests:Array<TscriptTest> = [
 			a = 4
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-48"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-48" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-49",
@@ -2538,8 +2643,9 @@ export  const tests:Array<TscriptTest> = [
 			print 4;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-49"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-49" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-50",
@@ -2548,8 +2654,9 @@ export  const tests:Array<TscriptTest> = [
 			var d, do;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-50"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-50" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-51",
@@ -2558,8 +2665,9 @@ export  const tests:Array<TscriptTest> = [
 			var d do
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-51"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-51" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-51b",
@@ -2568,8 +2676,9 @@ export  const tests:Array<TscriptTest> = [
 			var d = 5 do
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-51b"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-51b" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-52",
@@ -2578,8 +2687,9 @@ export  const tests:Array<TscriptTest> = [
 			function do() {}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-52"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-52" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-53",
@@ -2593,8 +2703,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-53"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-53" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-54",
@@ -2603,8 +2714,9 @@ export  const tests:Array<TscriptTest> = [
 			class do {}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-54"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-54" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-55",
@@ -2617,8 +2729,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-55"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-55" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-56",
@@ -2630,8 +2743,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-56"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-56" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-57",
@@ -2644,8 +2758,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-57"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-57" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-58",
@@ -2659,8 +2774,9 @@ export  const tests:Array<TscriptTest> = [
 			class B : A {}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-58"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-58" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-59",
@@ -2673,8 +2789,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-59"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-59" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-59b",
@@ -2688,8 +2805,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-59b"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-59b" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-60",
@@ -2702,8 +2820,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-60"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-60" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-61",
@@ -2716,8 +2835,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-61"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-61" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-62-1",
@@ -2730,8 +2850,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-62"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-62" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-62-2",
@@ -2744,8 +2865,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-62"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-62" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-63",
@@ -2757,8 +2879,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-63"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-63" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-64",
@@ -2767,8 +2890,9 @@ export  const tests:Array<TscriptTest> = [
 			namespace do {}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-64"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-64" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-65",
@@ -2777,8 +2901,9 @@ export  const tests:Array<TscriptTest> = [
 			from math;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-65"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-65" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-66",
@@ -2787,8 +2912,9 @@ export  const tests:Array<TscriptTest> = [
 			use namespace math as mathematics;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-66"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-66" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-67",
@@ -2797,8 +2923,9 @@ export  const tests:Array<TscriptTest> = [
 			use math.sqrt as do;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-67"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-67" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-68",
@@ -2808,8 +2935,9 @@ export  const tests:Array<TscriptTest> = [
 			for 0:10 do print("hello");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-68"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-68" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-69",
@@ -2818,8 +2946,9 @@ export  const tests:Array<TscriptTest> = [
 			if 3 < 4 print("smaller");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-69"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-69" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-70",
@@ -2828,8 +2957,9 @@ export  const tests:Array<TscriptTest> = [
 			for var "x" in 0:10 do print("x");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-70"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-70" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-71",
@@ -2838,8 +2968,9 @@ export  const tests:Array<TscriptTest> = [
 			for var x do print("x");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-71"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-71" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-72",
@@ -2848,8 +2979,9 @@ export  const tests:Array<TscriptTest> = [
 			for var x in 0:10 print("x");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-72"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-72" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-73",
@@ -2859,8 +2991,9 @@ export  const tests:Array<TscriptTest> = [
 			for a print("x");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-73"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-73" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-74",
@@ -2870,8 +3003,9 @@ export  const tests:Array<TscriptTest> = [
 			for 0:10 do print("y");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-74"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-74" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-75",
@@ -2881,8 +3015,9 @@ export  const tests:Array<TscriptTest> = [
 			for 0:10 do print("y");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-75"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-75" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-76",
@@ -2891,8 +3026,9 @@ export  const tests:Array<TscriptTest> = [
 			while true print("x");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-76"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-76" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-77",
@@ -2901,8 +3037,9 @@ export  const tests:Array<TscriptTest> = [
 			break;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-77"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-77" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-78",
@@ -2911,8 +3048,9 @@ export  const tests:Array<TscriptTest> = [
 			continue;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-78"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-78" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-79",
@@ -2926,8 +3064,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-79"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-79" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-80",
@@ -2936,8 +3075,9 @@ export  const tests:Array<TscriptTest> = [
 			{ return 42; }
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-80"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-80" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-81",
@@ -2947,8 +3087,9 @@ export  const tests:Array<TscriptTest> = [
 			{ return 42 }
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-81"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-81" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-81b",
@@ -2958,8 +3099,9 @@ export  const tests:Array<TscriptTest> = [
 			print("foo");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-81b"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-81b" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-81c",
@@ -2969,8 +3111,9 @@ export  const tests:Array<TscriptTest> = [
 			print("foo");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-81c"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-81c" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-82",
@@ -2983,8 +3126,9 @@ export  const tests:Array<TscriptTest> = [
 			print("world");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-82"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-82" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-84",
@@ -3000,8 +3144,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-84"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-84" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-85",
@@ -3017,8 +3162,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-85"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-85" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-86",
@@ -3034,8 +3180,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-86"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-86" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-87",
@@ -3045,8 +3192,9 @@ export  const tests:Array<TscriptTest> = [
 			print("uargh");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-87"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-87" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-88",
@@ -3055,8 +3203,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-88"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-88" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-89",
@@ -3065,8 +3214,9 @@ export  const tests:Array<TscriptTest> = [
 			for 0:10 do var a = 5;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-89"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-89" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "se-90",
@@ -3075,8 +3225,9 @@ export  const tests:Array<TscriptTest> = [
 			*5;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/syntax/se-90"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/syntax/se-90" },
+			"parsing failed",
+		],
 	},
 
 	// argument mismatch errors
@@ -3087,8 +3238,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = Boolean(1);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-1"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-1" },
+			"error",
+		],
 	},
 	{
 		name: "am-1-2",
@@ -3097,8 +3249,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = Integer(4:10);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-1"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-1" },
+			"error",
+		],
 	},
 	{
 		name: "am-1-3",
@@ -3107,8 +3260,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = "hello".find(3);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-1"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-1" },
+			"error",
+		],
 	},
 	{
 		name: "am-2",
@@ -3117,8 +3271,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = not "hello";
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-2"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-2" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-3",
@@ -3127,8 +3282,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = +true;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-3"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-3" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-4",
@@ -3137,8 +3293,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = -true;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-4"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-4" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-5",
@@ -3147,8 +3304,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 5 + math.sqrt;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-5"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-5" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-6",
@@ -3157,8 +3315,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 5 - math.sqrt;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-6"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-6" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-7",
@@ -3167,8 +3326,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 5 * math.sqrt;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-7"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-7" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-8-1",
@@ -3177,8 +3337,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 5 / math.sqrt;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-8"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-8" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-8-2",
@@ -3187,8 +3348,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 5 // math.sqrt;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-8"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-8" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-9",
@@ -3197,8 +3359,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 5 % math.sqrt;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-9"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-9" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-10",
@@ -3207,8 +3370,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 5 ^ math.sqrt;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-10"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-10" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-11-1",
@@ -3217,8 +3381,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 5 : 7.5;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-11"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-11" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-11-2",
@@ -3227,8 +3392,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 5.5 : 8;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-11"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-11" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-12-1",
@@ -3237,8 +3403,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = true and 7;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-12"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-12" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-12-2",
@@ -3247,8 +3414,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 6 and 9.25;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-12"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-12" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-12-3",
@@ -3257,8 +3425,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 6.25 and 9;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-12"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-12" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-12-4",
@@ -3267,8 +3436,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 6.25 or 9;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-12"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-12" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-12-5",
@@ -3277,8 +3447,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 6.25 xor 9;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-12"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-12" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-13-1",
@@ -3287,8 +3458,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = Integer(Real.inf());
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-13"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-13" },
+			"error",
+		],
 	},
 	{
 		name: "am-13-2",
@@ -3297,8 +3469,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = Integer(-Real.inf());
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-13"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-13" },
+			"error",
+		],
 	},
 	{
 		name: "am-13-3",
@@ -3307,8 +3480,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = Integer(Real.nan());
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-13"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-13" },
+			"error",
+		],
 	},
 	{
 		name: "am-14-1",
@@ -3317,8 +3491,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = Integer("hello");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-14"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-14" },
+			"error",
+		],
 	},
 	{
 		name: "am-14-2",
@@ -3327,8 +3502,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = Integer("");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-14"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-14" },
+			"error",
+		],
 	},
 	{
 		name: "am-15-1",
@@ -3337,8 +3513,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 1 // 0;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-15"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-15" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-15-2",
@@ -3347,8 +3524,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 1 % 0;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-15"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-15" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-15-3",
@@ -3357,8 +3535,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 0 // 0;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-15"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-15" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-15-4",
@@ -3367,8 +3546,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 0 % 0;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-15"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-15" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-16-1",
@@ -3377,8 +3557,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = 0:3 < 1:4;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-16"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-16" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-16-2",
@@ -3391,8 +3572,9 @@ export  const tests:Array<TscriptTest> = [
 			print(x < y);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-16"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-16" },
+			"error",
+		],
 	},
 	{
 		name: "am-16b",
@@ -3401,8 +3583,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = "a" < 100;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-16b"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-16b" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-17",
@@ -3411,8 +3594,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = Array(-2, null);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-17"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-17" },
+			"error",
+		],
 	},
 	{
 		name: "am-18",
@@ -3422,8 +3606,9 @@ export  const tests:Array<TscriptTest> = [
 			x.insert(5, null);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-18"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-18" },
+			"error",
+		],
 	},
 	{
 		name: "am-18b",
@@ -3432,8 +3617,9 @@ export  const tests:Array<TscriptTest> = [
 			[].pop();
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-18b"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-18b" },
+			"error",
+		],
 	},
 	{
 		name: "am-19",
@@ -3442,8 +3628,9 @@ export  const tests:Array<TscriptTest> = [
 			[1,2,3].sort(function(a, b) { return "a"; });
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-19"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-19" },
+			"error",
+		],
 	},
 	{
 		name: "am-20",
@@ -3452,8 +3639,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = "hello"["s"];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-20"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-20" },
+			"error",
+		],
 	},
 	{
 		name: "am-21",
@@ -3462,8 +3650,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = "hello"[-2];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-21"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-21" },
+			"error",
+		],
 	},
 	{
 		name: "am-22",
@@ -3472,8 +3661,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = "hello"[7];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-22"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-22" },
+			"error",
+		],
 	},
 	{
 		name: "am-23",
@@ -3482,8 +3672,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = [1,2,3][-2];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-23"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-23" },
+			"error",
+		],
 	},
 	{
 		name: "am-24",
@@ -3492,8 +3683,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = [1,2,3][7];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-24"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-24" },
+			"error",
+		],
 	},
 	{
 		name: "am-25",
@@ -3503,8 +3695,9 @@ export  const tests:Array<TscriptTest> = [
 			x[1:3] = [4,5];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-25"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-25" },
+			"error",
+		],
 	},
 	{
 		name: "am-26",
@@ -3513,8 +3706,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = [1,2,3]["a"];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-26"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-26" },
+			"error",
+		],
 	},
 	{
 		name: "am-27",
@@ -3523,8 +3717,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = {a:3,b:5}["c"];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-27"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-27" },
+			"error",
+		],
 	},
 	{
 		name: "am-28",
@@ -3533,8 +3728,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = {a:3,b:5}[33];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-28"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-28" },
+			"error",
+		],
 	},
 	{
 		name: "am-29-1",
@@ -3543,8 +3739,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = (5:15)[-2];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-29"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-29" },
+			"error",
+		],
 	},
 	{
 		name: "am-29-2",
@@ -3553,8 +3750,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = (5:15)[12];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-29"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-29" },
+			"error",
+		],
 	},
 	{
 		name: "am-30",
@@ -3563,8 +3761,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = (5:15)["c"];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-30"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-30" },
+			"error",
+		],
 	},
 	{
 		name: "am-31",
@@ -3574,8 +3773,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = y["c"];
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-31"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-31" },
+			"error",
+		],
 	},
 	{
 		name: "am-31b",
@@ -3585,8 +3785,9 @@ export  const tests:Array<TscriptTest> = [
 			y[2] = 0;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-31b"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-31b" },
+			"error",
+		],
 	},
 	{
 		name: "am-32-1",
@@ -3596,8 +3797,9 @@ export  const tests:Array<TscriptTest> = [
 			(x) = 0;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-32"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-32" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-32-2",
@@ -3606,8 +3808,9 @@ export  const tests:Array<TscriptTest> = [
 			42 = 0;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-32"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-32" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-32-3",
@@ -3616,8 +3819,9 @@ export  const tests:Array<TscriptTest> = [
 			math.sqrt = 0;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-32"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-32" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-32-4",
@@ -3627,8 +3831,9 @@ export  const tests:Array<TscriptTest> = [
 			math.sqrt(x) = 0;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-32"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-32" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-32-5",
@@ -3637,8 +3842,9 @@ export  const tests:Array<TscriptTest> = [
 			Integer = 0;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-32"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-32" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-32-6",
@@ -3648,8 +3854,9 @@ export  const tests:Array<TscriptTest> = [
 			x[2] = 0;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-32"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-32" },
+			"error",
+		],
 	},
 	{
 		name: "am-32-7",
@@ -3664,8 +3871,9 @@ export  const tests:Array<TscriptTest> = [
 			x.f = 0;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-32"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-32" },
+			"error",
+		],
 	},
 	{
 		name: "am-32-8",
@@ -3680,8 +3888,9 @@ export  const tests:Array<TscriptTest> = [
 			x.f = 0;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-32"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-32" },
+			"error",
+		],
 	},
 	{
 		name: "am-33",
@@ -3690,8 +3899,9 @@ export  const tests:Array<TscriptTest> = [
 			if 1 then print("hello");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-33"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-33" },
+			"error",
+		],
 	},
 	{
 		name: "am-34",
@@ -3700,8 +3910,9 @@ export  const tests:Array<TscriptTest> = [
 			for 10 do print("hello");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-34"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-34" },
+			"error",
+		],
 	},
 	{
 		name: "am-35",
@@ -3711,8 +3922,9 @@ export  const tests:Array<TscriptTest> = [
 			for f in 0:10 do print("hello");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-35"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-35" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "am-36",
@@ -3722,9 +3934,10 @@ export  const tests:Array<TscriptTest> = [
 			do print("hello"); while b;
 		`,
 		expectation: [
-				{type: "print", message: "hello"},
-				{type: "error", href: "#/errors/argument-mismatch/am-36"},
-				"error"],
+			{ type: "print", message: "hello" },
+			{ type: "error", href: "#/errors/argument-mismatch/am-36" },
+			"error",
+		],
 	},
 	{
 		name: "am-37",
@@ -3733,8 +3946,9 @@ export  const tests:Array<TscriptTest> = [
 			while 1 do print("hello");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-37"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-37" },
+			"error",
+		],
 	},
 	{
 		name: "am-38",
@@ -3743,8 +3957,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = load("unittest-data-9rhgmq9k2lmyxlcjl249vfnx92vmpis");
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-38"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-38" },
+			"error",
+		],
 	},
 	{
 		name: "am-39-1",
@@ -3754,8 +3969,9 @@ export  const tests:Array<TscriptTest> = [
 			save("unittest-data", x);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-39"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-39" },
+			"error",
+		],
 	},
 	{
 		name: "am-39-2",
@@ -3766,8 +3982,9 @@ export  const tests:Array<TscriptTest> = [
 			save("unittest-data", x);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-39"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-39" },
+			"error",
+		],
 	},
 	{
 		name: "am-40",
@@ -3776,8 +3993,9 @@ export  const tests:Array<TscriptTest> = [
 			setEventHandler("invalid-event-name", function(event) {});
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-40"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-40" },
+			"error",
+		],
 	},
 	{
 		name: "am-41",
@@ -3786,8 +4004,9 @@ export  const tests:Array<TscriptTest> = [
 			setEventHandler("timer", function() {});
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-41"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-41" },
+			"error",
+		],
 	},
 	{
 		name: "am-42-1",
@@ -3797,8 +4016,9 @@ export  const tests:Array<TscriptTest> = [
 			var y = deepcopy(x);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-42"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-42" },
+			"error",
+		],
 	},
 	{
 		name: "am-42-2",
@@ -3808,8 +4028,9 @@ export  const tests:Array<TscriptTest> = [
 			var y = deepcopy(x);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-42"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-42" },
+			"error",
+		],
 	},
 	{
 		name: "am-43-1",
@@ -3820,8 +4041,9 @@ export  const tests:Array<TscriptTest> = [
 			print(x);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-43"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-43" },
+			"error",
+		],
 	},
 	{
 		name: "am-43-2",
@@ -3834,8 +4056,9 @@ export  const tests:Array<TscriptTest> = [
 			print(x == y);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/argument-mismatch/am-43"},
-				"error"],
+			{ type: "error", href: "#/errors/argument-mismatch/am-43" },
+			"error",
+		],
 	},
 
 	// name resolution errors
@@ -3847,8 +4070,9 @@ export  const tests:Array<TscriptTest> = [
 			f(1, x=2, y=3);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-1"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-1" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-1-",
@@ -3858,8 +4082,9 @@ export  const tests:Array<TscriptTest> = [
 			f(x=1, x=2, y=3);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-1"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-1" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-2",
@@ -3869,8 +4094,9 @@ export  const tests:Array<TscriptTest> = [
 			f(x=1, y=2, z=3);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-2"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-2" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-3",
@@ -3880,8 +4106,9 @@ export  const tests:Array<TscriptTest> = [
 			f(1, 2, 3);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-3"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-3" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-4",
@@ -3891,8 +4118,9 @@ export  const tests:Array<TscriptTest> = [
 			f(1, z=3);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-4"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-4" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-5-1",
@@ -3901,8 +4129,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = b;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-5"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-5" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-5-2",
@@ -3911,8 +4140,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = math.sqrt(x);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-5"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-5" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-6",
@@ -3931,8 +4161,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-6"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-6" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-7",
@@ -3946,8 +4177,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-7"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-7" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-8",
@@ -3966,8 +4198,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-8"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-8" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-9",
@@ -3976,8 +4209,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = math.foobar;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-9"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-9" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-11",
@@ -3986,8 +4220,9 @@ export  const tests:Array<TscriptTest> = [
 			var x = math;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-11"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-11" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-12",
@@ -3998,9 +4233,7 @@ export  const tests:Array<TscriptTest> = [
 			}
 			var x = A.a;
 		`,
-		expectation: [
-				{type: "error", href: "#/errors/name/ne-12"},
-				"error"],
+		expectation: [{ type: "error", href: "#/errors/name/ne-12" }, "error"],
 	},
 	{
 		name: "ne-13",
@@ -4012,9 +4245,7 @@ export  const tests:Array<TscriptTest> = [
 			var x = A();
 			var y = x.a;
 		`,
-		expectation: [
-				{type: "error", href: "#/errors/name/ne-13"},
-				"error"],
+		expectation: [{ type: "error", href: "#/errors/name/ne-13" }, "error"],
 	},
 	{
 		name: "ne-14-1",
@@ -4024,8 +4255,9 @@ export  const tests:Array<TscriptTest> = [
 			var a;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-14"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-14" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-14-2",
@@ -4037,8 +4269,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-14"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-14" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-14-3",
@@ -4051,8 +4284,9 @@ export  const tests:Array<TscriptTest> = [
 			};
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-14"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-14" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-14-4",
@@ -4066,8 +4300,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-14"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-14" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-14-5",
@@ -4083,8 +4318,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-14"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-14" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-15-1",
@@ -4094,8 +4330,9 @@ export  const tests:Array<TscriptTest> = [
 			function f(x) {}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-15"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-15" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-15-2",
@@ -4109,8 +4346,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-15"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-15" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-16-1",
@@ -4119,8 +4357,9 @@ export  const tests:Array<TscriptTest> = [
 			function f(x, x) {}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-16"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-16" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-16-2",
@@ -4130,8 +4369,9 @@ export  const tests:Array<TscriptTest> = [
 			var f = function[x=a](x) {};
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-16"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-16" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-17",
@@ -4141,8 +4381,9 @@ export  const tests:Array<TscriptTest> = [
 			var f = function[x=a,x=b]() {};
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-17"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-17" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-18",
@@ -4152,8 +4393,9 @@ export  const tests:Array<TscriptTest> = [
 			class A {}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-18"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-18" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-19",
@@ -4163,8 +4405,9 @@ export  const tests:Array<TscriptTest> = [
 			namespace A {}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-19"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-19" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-21",
@@ -4177,8 +4420,9 @@ export  const tests:Array<TscriptTest> = [
 			}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-21"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-21" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-22",
@@ -4188,8 +4432,9 @@ export  const tests:Array<TscriptTest> = [
 			class A : B {}
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-22"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-22" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-23",
@@ -4199,8 +4444,9 @@ export  const tests:Array<TscriptTest> = [
 			use namespace a;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-23"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-23" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-24",
@@ -4210,8 +4456,9 @@ export  const tests:Array<TscriptTest> = [
 			use namespace math;
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-24"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-24" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-25",
@@ -4225,8 +4472,9 @@ export  const tests:Array<TscriptTest> = [
 			var a = A(0);
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-25"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-25" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-26",
@@ -4235,8 +4483,9 @@ export  const tests:Array<TscriptTest> = [
 			class A : A { }
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-26"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-26" },
+			"parsing failed",
+		],
 	},
 	{
 		name: "ne-27",
@@ -4245,8 +4494,9 @@ export  const tests:Array<TscriptTest> = [
 			class A { public: function f() { var obj = A(); } }
 		`,
 		expectation: [
-				{type: "error", href: "#/errors/name/ne-27"},
-				"parsing failed"],
+			{ type: "error", href: "#/errors/name/ne-27" },
+			"parsing failed",
+		],
 	},
 
 	// logic errors
@@ -4257,9 +4507,7 @@ export  const tests:Array<TscriptTest> = [
 			function f() { f(); }
 			f();
 		`,
-		expectation: [
-				{type: "error", href: "#/errors/logic/le-1"},
-				"error"],
+		expectation: [{ type: "error", href: "#/errors/logic/le-1" }, "error"],
 	},
 	{
 		name: "le-2",
@@ -4270,23 +4518,20 @@ export  const tests:Array<TscriptTest> = [
 					{ f(); });
 			enterEventMode();
 		`,
-		events:
-		[
+		events: [
 			{
 				name: "canvas.keydown",
 				type: "canvas.KeyboardEvent",
 				attr: {
 					key: "ArrowLeft",
-					shift : false,
+					shift: false,
 					control: true,
 					alt: false,
 					meta: false,
 				},
 			},
 		],
-		expectation: [
-				{type: "error", href: "#/errors/logic/le-2"},
-				"error"],
+		expectation: [{ type: "error", href: "#/errors/logic/le-2" }, "error"],
 	},
 	{
 		name: "le-3",
@@ -4294,9 +4539,7 @@ export  const tests:Array<TscriptTest> = [
 		code: `
 			quitEventMode();
 		`,
-		expectation: [
-				{type: "error", href: "#/errors/logic/le-3"},
-				"error"],
+		expectation: [{ type: "error", href: "#/errors/logic/le-3" }, "error"],
 	},
 
 	// user errors
@@ -4307,9 +4550,7 @@ export  const tests:Array<TscriptTest> = [
 		code: `
 			throw "foo";
 		`,
-		expectation: [
-				{type: "error", href: "#/errors/user/ue-3"},
-				"error"],
+		expectation: [{ type: "error", href: "#/errors/user/ue-3" }, "error"],
 	},
 
 	test_lattice_craft,
@@ -4317,4 +4558,3 @@ export  const tests:Array<TscriptTest> = [
 	// Checking internal errors is inherently impossible, and quite meaningless.
 	// Therefore we don't have unit tests for them.
 ];
-
