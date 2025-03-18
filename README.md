@@ -22,7 +22,7 @@ on the right of the toolbar.
 In TScript, "hello world" is a one-liner:
 
 ```
-print("Hello World");
+print("Hello CI");
 ```
 
 For proper example code have a look at the [examples](https://github.com/TGlas/tscript/tree/master/examples)
