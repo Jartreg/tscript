@@ -150,7 +150,7 @@ export interface ParseInput {
 	 * @param filename the filename as specified in the include statement
 	 * @returns the file to be included or null if none could be found
 	 */
-	resolveInclude(filename: string): ParseInput | null;
+	resolveInclude(filename: string): Promise<ParseInput | null>;
 }
 
 export interface ParseResult {
@@ -159,21 +159,50 @@ export interface ParseResult {
 	errors: ParseErrorOrWarning[];
 }
 
-export function parseProgramFromString(source: string, options?: ParseOptions) {
-	return parseProgram(
-		{
-			filename: "main",
-			source,
-			resolveInclude: () => null,
-		},
-		options
-	);
-}
-
-export function parseProgram(
-	mainInput: ParseInput,
+export function parseProgramFromString(
+	source: string,
 	options: ParseOptions = defaultParseOptions
 ): ParseResult {
+	/** list of errors */
+	const errors: ParseErrorOrWarning[] = [];
+	const program = createEmptyProgram();
+	const state = createParserState(program, errors);
+	const boundParseString = parseString.bind(undefined, state, options);
+
+	try {
+		// pass 1: build an abstract syntax tree
+
+		parseLibraries(boundParseString);
+
+		// parse the user's source code
+		program.where = state.get();
+		boundParseString(source, undefined, "main");
+		program.lines = state.line;
+
+		finalizeProgram(state);
+	} catch (ex: any) {
+		// ignore the actual exception and rely on state.errors instead
+		if (ex.name !== "Parse Error") {
+			// report an internal parser error
+			errors.push({
+				type: "error",
+				href: "#/errors/internal/ie-1",
+				message: ErrorHelper.composeError("/internal/ie-1", [
+					ErrorHelper.ex2string(ex),
+				]),
+			});
+		}
+	}
+
+	return errors.length > 0
+		? { program: null, errors }
+		: { program, errors: [] };
+}
+
+export async function parseProgram(
+	mainInput: ParseInput,
+	options: ParseOptions = defaultParseOptions
+): Promise<ParseResult> {
 	const includedFiles = new Set<string>();
 	/** list of errors */
 	const errors: ParseErrorOrWarning[] = [];
@@ -181,40 +210,15 @@ export function parseProgram(
 	const state = createParserState(program, errors);
 
 	/**
-	 * Parse one library or program from a string, optionally attaching built-in implementations.
-	 * Includes are not supported.
-	 */
-	function parseString(
-		source: string,
-		impl: any = null,
-		filename: string | null = null
-	) {
-		state.setSource(source, impl, filename);
-		while (state.good()) {
-			let inc = parse_include(state, program, options);
-			if (inc !== null) {
-				// includes are not allowed
-				// pretend the file was not found
-				state.set(inc.position);
-				state.error("/argument-mismatch/am-48", [inc.filename]);
-			} else {
-				let p = parse_statement_or_declaration(state, program, options);
-				program.commands.push(p);
-				program.children.push(p);
-			}
-		}
-	}
-
-	/**
 	 * Parse one library or program from a file. Includes are supported
 	 */
-	function parseFile(file: ParseInput) {
+	async function parseFile(file: ParseInput) {
 		includedFiles.add(file.filename);
 		state.setSource(file.source, null, file.filename);
 		while (state.good()) {
 			const inc = parse_include(state, program, options);
 			if (inc !== null) {
-				const targetFile = file.resolveInclude(inc.filename);
+				const targetFile = await file.resolveInclude(inc.filename);
 				if (!targetFile) {
 					// the file was not found
 					state.set(inc.position);
@@ -234,7 +238,7 @@ export function parseProgram(
 					};
 
 					// import the file
-					parseFile(targetFile);
+					await parseFile(targetFile);
 
 					// restore the state
 					state.source = backup.source;
@@ -255,36 +259,14 @@ export function parseProgram(
 	try {
 		// pass 1: build an abstract syntax tree
 
-		// parse the language core
-		parseString(core.source, core.impl);
-
-		// parse the built-in libraries
-		parseString(lib_math.source, lib_math.impl);
-		parseString(lib_turtle.source, lib_turtle.impl);
-		parseString(lib_canvas.source, lib_canvas.impl);
-		parseString(lib_audio.source, lib_audio.impl);
+		parseLibraries(parseString.bind(undefined, state, options));
 
 		// parse the user's source code
 		program.where = state.get();
-		parseFile(mainInput);
+		await parseFile(mainInput);
 		program.lines = state.line;
 
-		// append an "end" breakpoint
-		state.skip();
-		if (
-			!program.breakpoints[mainInput.filename].hasOwnProperty(state.line)
-		) {
-			// create and register a new breakpoint
-			let b = create_breakpoint(program, state);
-			program.breakpoints[mainInput.filename][state.line] = b;
-			program.commands.push(b);
-		}
-
-		// pass 2: resolve all names
-		compilerPass(state, "Resolve");
-
-		// further passes may follow in the future, e.g., for optimizations
-		// compilerPass("Optimize");
+		finalizeProgram(state);
 	} catch (ex: any) {
 		// ignore the actual exception and rely on state.errors instead
 		if (ex.name !== "Parse Error") {
@@ -302,6 +284,64 @@ export function parseProgram(
 	return errors.length > 0
 		? { program: null, errors }
 		: { program, errors: [] };
+}
+
+function parseLibraries(parseLib: (source: string, impl: any) => void) {
+	// parse the language core
+	parseLib(core.source, core.impl);
+
+	// parse the built-in libraries
+	parseLib(lib_math.source, lib_math.impl);
+	parseLib(lib_turtle.source, lib_turtle.impl);
+	parseLib(lib_canvas.source, lib_canvas.impl);
+	parseLib(lib_audio.source, lib_audio.impl);
+}
+
+/**
+ * Parse one library or program from a string, optionally attaching built-in implementations.
+ * Includes are not supported.
+ */
+function parseString(
+	state: ParserState,
+	options: ParseOptions,
+	source: string,
+	impl: any = null,
+	filename: string | null = null
+) {
+	const program = state.program;
+	state.setSource(source, impl, filename);
+	while (state.good()) {
+		let inc = parse_include(state, program, options);
+		if (inc !== null) {
+			// includes are not allowed
+			// pretend the file was not found
+			state.set(inc.position);
+			state.error("/argument-mismatch/am-48", [inc.filename]);
+		} else {
+			let p = parse_statement_or_declaration(state, program, options);
+			program.commands.push(p);
+			program.children.push(p);
+		}
+	}
+}
+
+function finalizeProgram(state: ParserState) {
+	// appends a breakpoint on the last line of the program, if none exists
+	state.skip();
+	const { program, filename, line } = state;
+	const breakpoints = program.breakpoints[filename!];
+	if (!breakpoints.hasOwnProperty(line)) {
+		// create and register a new breakpoint
+		let b = create_breakpoint(program, state);
+		breakpoints[line] = b;
+		program.commands.push(b);
+	}
+
+	// pass 2: resolve all names
+	compilerPass(state, "Resolve");
+
+	// further passes may follow in the future, e.g., for optimizations
+	// compilerPass("Optimize");
 }
 
 /** recursive compiler pass through the syntax tree */

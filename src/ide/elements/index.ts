@@ -38,6 +38,8 @@ let turtleContainer!: HTMLElement;
 
 /** current interpreter session, non-null after successful parsing */
 export let interpreterSession: InterpreterSession | null = null;
+export let pendingInterpreterSession: Promise<InterpreterSession | null> | null =
+	null;
 
 let main: any = null;
 let toolbar: any = null;
@@ -143,8 +145,8 @@ export function clear() {
  */
 export function createParseInput(
 	files = new Map<string, ParseInput>()
-): ParseInput | null {
-	function getFile(filename: string): ParseInput | null {
+): Promise<ParseInput | null> {
+	async function getFile(filename: string): Promise<ParseInput | null> {
 		const existing = files.get(filename);
 		if (existing) return existing;
 
@@ -165,13 +167,21 @@ export function createParseInput(
  * Prepare everything for the program to start running,
  * put the IDE into stepping mode at the start of the program.
  */
-export function prepareRun(): InterpreterSession | null {
+export async function prepareRun(): Promise<InterpreterSession | null> {
+	return (pendingInterpreterSession ??= createInterpreterSession().finally(
+		() => {
+			pendingInterpreterSession = null;
+		}
+	));
+}
+
+async function createInterpreterSession(): Promise<InterpreterSession | null> {
 	clear();
 
-	const parseInput = createParseInput();
+	const parseInput = await createParseInput();
 	if (!parseInput) return null;
 
-	const { program, errors } = parseProgram(parseInput, parseOptions);
+	const { program, errors } = await parseProgram(parseInput, parseOptions);
 	for (const err of errors) {
 		addMessage(
 			err.type,
