@@ -57,7 +57,7 @@ export let tab_config: { align: "horizontal" | "vertical" } = {
 export function addMessage(
 	type: "print" | "warning" | "error",
 	text: string,
-	filename?: string,
+	fileId?: string,
 	line?: number,
 	ch?: number,
 	href?: string
@@ -104,10 +104,10 @@ export function addMessage(
 				(type !== "print" ? " ide-errormessage" : ""),
 			text: s,
 		});
-		if (filename && line != null) {
+		if (fileId && line != null) {
 			msg.addEventListener("click", (event) => {
 				event.preventDefault();
-				collection.openEditorFromFile(filename!, {
+				collection.openEditorFromFile(fileId, {
 					line: line - 1,
 					character: ch,
 				});
@@ -155,7 +155,12 @@ export function createParseInput(
 			localStorage.getItem(`tscript.code.${filename}`);
 		if (!source) return null;
 
-		const file: ParseInput = { filename, source, resolveInclude: getFile };
+		const file: ParseInput = {
+			id: filename,
+			filename,
+			source,
+			resolveInclude: getFile,
+		};
 		files.set(filename, file);
 		return file;
 	}
@@ -191,7 +196,7 @@ async function createInterpreterSession(): Promise<InterpreterSession | null> {
 				err.line +
 				": " +
 				err.message,
-			err.filename ?? undefined,
+			err.fileId ?? undefined,
 			err.line,
 			err.ch,
 			err.type === "error" ? err.href : undefined
@@ -245,12 +250,12 @@ export class InterpreterSession {
 		};
 		interpreter.service.message = (
 			msg: string,
-			filename?: string,
+			fileId?: string,
 			line?: number,
 			ch?: number,
 			href?: string
 		) => {
-			addMessage("error", msg, filename, line, ch, href);
+			addMessage("error", msg, fileId, line, ch, href);
 		};
 		interpreter.service.statechanged = () => {
 			updateProgramState();
@@ -338,7 +343,7 @@ function updateProgramState(options?: { interpreterChanged: boolean }) {
 			const frame = stack[stack.length - 1];
 			const pe = frame.pe[frame.pe.length - 1];
 			if (pe.where) {
-				collection.openEditorFromFile(pe.where.filename, {
+				collection.openEditorFromFile(pe.where.fileId, {
 					line: pe.where.line - 1,
 					character: pe.where.ch,
 				});
@@ -703,7 +708,7 @@ export function create(container: HTMLElement, options?: any) {
 		parent: panel_programview.content,
 		nodeclick: function (event, value, id) {
 			if (value.where) {
-				collection.openEditorFromFile(value.where.filename, {
+				collection.openEditorFromFile(value.where.fileId, {
 					line: value.where.line - 1,
 					character: value.where.ch,
 				});

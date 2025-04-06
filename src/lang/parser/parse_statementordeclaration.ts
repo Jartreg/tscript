@@ -29,10 +29,10 @@ export function parse_statement_or_declaration(
 		}
 	}
 
-	if (!state.builtin() && state.filename) {
+	if (!state.builtin() && state.fileId) {
 		state.skip();
 
-		const breakpoints = state.program.breakpoints[state.filename];
+		const breakpoints = state.program.breakpoints[state.fileId];
 
 		if (!breakpoints.hasOwnProperty(state.line)) {
 			// create and register a new breakpoint

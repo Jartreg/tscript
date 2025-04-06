@@ -55,7 +55,7 @@ export function stackinfo(value, node_id) {
 
 				ret.element.addEventListener("click", (event) => {
 					event.preventDefault();
-					collection.openEditorFromFile(where.filename, {
+					collection.openEditorFromFile(where.fileId, {
 						line: where.line - 1,
 						character: where.ch,
 					});

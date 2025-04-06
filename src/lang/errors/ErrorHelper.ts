@@ -1,3 +1,5 @@
+import { StackFrame } from "../interpreter/interpreter";
+import { ParserPosition } from "../parser";
 import { AssertionError } from "./AssertionError";
 import { RuntimeError } from "./RuntimeError";
 
@@ -31,56 +33,40 @@ export class ErrorHelper {
 	}
 
 	public static getError(
-		path,
-		args: Array<any> | undefined = undefined,
-		stack: any = undefined,
-		_filename: string | undefined = undefined,
-		_line: number | undefined = undefined,
-		_ch: number | undefined = undefined
+		path: string,
+		args: any[] = [],
+		stack: StackFrame[] = []
 	) {
-		if (typeof stack === "undefined") {
-			stack = new Array();
-		}
+		const message = ErrorHelper.composeError(path, args);
+		const href = "#/errors" + path;
 
-		if (args === undefined) args = [];
-
-		let message = ErrorHelper.composeError(path, args);
-		let href = "#/errors" + path;
-		let filename: any = null,
-			line: any = null,
-			ch: any = null;
-
-		if (typeof _filename === "string") {
-			filename = _filename;
-		}
-		if (typeof _line === "number") {
-			line = _line;
-		}
-		if (typeof _ch === "number") {
-			ch = _ch;
-		}
-
-		for (let j = stack.length - 1; j >= 0; j--) {
-			let frame = stack[j];
+		let pos: ParserPosition | undefined;
+		posSearch: for (let j = stack.length - 1; j >= 0; j--) {
+			const frame = stack[j];
 			for (let i = frame.pe.length - 1; i >= 0; i--) {
-				let pe = frame.pe[i];
-				if (pe && pe.where) {
-					filename = pe.where.filename;
-					line = pe.where.line;
-					ch = pe.where.ch;
-					break;
+				let pePos = frame.pe[i]?.where;
+				if (pePos) {
+					pos = pePos;
+					break posSearch;
 				}
 			}
-			if (line !== null) break;
 		}
-		return new RuntimeError(message, filename, line, ch, href);
+
+		return new RuntimeError(
+			message,
+			pos?.fileId ?? undefined,
+			pos?.filename ?? undefined,
+			pos?.line,
+			pos?.ch,
+			href
+		);
 	}
 	// raise a fatal runtime error, preserve the interpreter state for debugging
 	public static error(
-		path,
-		args: Array<any> | undefined = undefined,
-		stack: any = undefined
-	) {
+		path: string,
+		args: any[] = [],
+		stack: StackFrame[] = []
+	): never {
 		throw ErrorHelper.getError(path, args, stack);
 	}
 

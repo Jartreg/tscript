@@ -1,12 +1,13 @@
-import { ParseInput, parseProgram } from "../lang/parser";
+import { parseProgram } from "../lang/parser";
 import {
 	createCanvas,
 	createIDEInterpreter,
 	createTurtle,
 } from "./elements/create-interpreter";
+import { deserializeProgram, SerializedProgram } from "./program-serializer";
 
 export type StandaloneData = {
-	code: { documents: Record<string, string>; main: string };
+	code: SerializedProgram;
 	mode: "canvas" | "turtle";
 };
 
@@ -14,18 +15,7 @@ export async function showStandalonePage(
 	container: HTMLElement,
 	data: StandaloneData
 ) {
-	const { documents } = data.code;
-	async function getParseInput(filename: string): Promise<ParseInput | null> {
-		if (!Object.hasOwn(documents, filename)) return null;
-		return {
-			filename,
-			source: documents[filename],
-			resolveInclude: getParseInput,
-		};
-	}
-	const mainFile = await getParseInput(data.code.main);
-	if (!mainFile) return; // This has been validated on export
-
+	const mainFile = deserializeProgram(data.code);
 	const { program } = await parseProgram(mainFile);
 	if (program == null) return; // This has been validated on export
 

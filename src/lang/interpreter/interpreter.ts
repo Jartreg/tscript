@@ -317,7 +317,7 @@ export class Interpreter {
 							line +
 							": " +
 							ex.message,
-						filename,
+						pe?.where?.fileId ?? ex.fileId,
 						line,
 						ch,
 						ex.href
@@ -441,10 +441,10 @@ export class Interpreter {
 	 *
 	 * @param lines one-based positions of breakpoints
 	 */
-	public defineBreakpoints(lines: Iterable<number>, filename: string) {
+	public defineBreakpoints(lines: Iterable<number>, fileId: string) {
 		let pos = new Set<number>();
 		let changed = false;
-		const breakpoints = this.program.breakpoints[filename];
+		const breakpoints = this.program.breakpoints[fileId];
 		if (!breakpoints) return null;
 
 		// loop over all positions
@@ -486,9 +486,9 @@ export class Interpreter {
 	 */
 	public toggleBreakpoint(
 		line: number,
-		filename: string
+		fielId: string
 	): { line: number; active: boolean } | null {
-		const breakpoints = this.program.breakpoints[filename];
+		const breakpoints = this.program.breakpoints[fielId];
 		if (!breakpoints) return null;
 
 		for (; line <= this.program.lines; line++) {

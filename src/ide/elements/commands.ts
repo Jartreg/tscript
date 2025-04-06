@@ -1,6 +1,7 @@
 import * as ide from ".";
 import { ParseInput, parseProgram } from "../../lang/parser";
 import { icons } from "../icons";
+import { createProgramSerializer } from "../program-serializer";
 import * as tgui from "./../tgui";
 import {
 	confirmFileOverwrite,
@@ -135,12 +136,11 @@ export async function cmd_export() {
 	if (!parseInput) return;
 
 	// check that the code at least compiles
-	let result = await parseProgram(parseInput, parseOptions);
-	let program = result.program;
-	let errors = result.errors;
-	if (errors && errors.length > 0) {
-		for (let i = 0; i < errors.length; i++) {
-			let err = errors[i];
+	const [serializingInput, serializedProgram] =
+		createProgramSerializer(parseInput);
+	const result = await parseProgram(serializingInput, parseOptions);
+	if (!result.program) {
+		for (const err of result.errors) {
 			ide.addMessage(
 				err.type,
 				err.type +
@@ -149,16 +149,12 @@ export async function cmd_export() {
 					err.line +
 					": " +
 					err.message,
-				err.filename ?? undefined,
+				err.fileId ?? undefined,
 				err.line,
 				err.ch,
 				err.type === "error" ? err.href : undefined
 			);
 		}
-		return;
-	}
-	if (!program) {
-		alert("internal error during export");
 		return;
 	}
 
@@ -209,12 +205,7 @@ export async function cmd_export() {
 	tgui.startModal(dlg);
 
 	// escape the TScript source code; prepare it to reside inside an html document
-	let source = JSON.stringify({
-		documents: Object.fromEntries(
-			Array.from(parsedFiles.values(), (f) => [f.filename, f.source])
-		),
-		main: parseInput.filename,
-	});
+	let source = JSON.stringify(serializedProgram);
 
 	// obtain the page itself as a string
 	{

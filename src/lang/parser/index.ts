@@ -12,6 +12,9 @@ import { parse_statement_or_declaration } from "./parse_statementordeclaration";
 import { parse_include } from "./parse_include";
 
 export interface ParserPosition {
+	/** unique id of the file */
+	fileId: string | null;
+
 	/** filename or null */
 	filename: string | null;
 
@@ -28,7 +31,9 @@ export interface ParserPosition {
 	totalpos: number;
 }
 
-type ErrorPosition = Partial<Pick<ParserPosition, "filename" | "line" | "ch">>;
+type ErrorPosition = Partial<
+	Pick<ParserPosition, "filename" | "fileId" | "line" | "ch">
+>;
 export type ParseError = ErrorPosition & {
 	type: "error";
 	message: string;
@@ -141,6 +146,7 @@ export const defaultParseOptions: ParseOptions = {
 };
 
 export interface ParseInput {
+	id: string;
 	filename: string;
 	source: string;
 
@@ -213,8 +219,8 @@ export async function parseProgram(
 	 * Parse one library or program from a file. Includes are supported
 	 */
 	async function parseFile(file: ParseInput) {
-		includedFiles.add(file.filename);
-		state.setSource(file.source, null, file.filename);
+		includedFiles.add(file.id);
+		state.setSource(file.source, null, file.id);
 		while (state.good()) {
 			const inc = parse_include(state, program, options);
 			if (inc !== null) {
@@ -226,13 +232,14 @@ export async function parseProgram(
 					return;
 				}
 
-				if (!includedFiles.has(targetFile.filename)) {
+				if (!includedFiles.has(targetFile.id)) {
 					// safe the state
 					let backup = {
 						source: state.source,
 						pos: state.pos,
 						line: state.line,
 						filename: state.filename,
+						fileId: state.fileId,
 						ch: state.ch,
 						indent: state.indent.slice(),
 					};
@@ -245,6 +252,7 @@ export async function parseProgram(
 					state.pos = backup.pos;
 					state.line = backup.line;
 					state.filename = backup.filename;
+					state.fileId = backup.fileId;
 					state.ch = backup.ch;
 					state.indent = backup.indent;
 				}
@@ -328,8 +336,8 @@ function parseString(
 function finalizeProgram(state: ParserState) {
 	// appends a breakpoint on the last line of the program, if none exists
 	state.skip();
-	const { program, filename, line } = state;
-	const breakpoints = program.breakpoints[filename!];
+	const { program, fileId, line } = state;
+	const breakpoints = program.breakpoints[fileId!];
 	if (!breakpoints.hasOwnProperty(line)) {
 		// create and register a new breakpoint
 		let b = create_breakpoint(program, state);
@@ -397,6 +405,7 @@ const createParserState = (
 	pos: 0,
 	line: 1,
 	filename: null,
+	fileId: null,
 	ch: 0,
 	totalpos: 0,
 	indent: [0],
@@ -407,12 +416,14 @@ const createParserState = (
 	setSource(
 		source: string,
 		impl: any = null,
-		filename: string | null = null
+		filename: string | null = null,
+		fileId = filename
 	) {
 		this.source = source;
 		this.impl = impl;
 		this.filename = filename;
-		if (filename != undefined) this.program.breakpoints[filename] = {};
+		this.fileId = filename;
+		if (fileId != null) this.program.breakpoints[fileId] = {};
 		this.pos = 0;
 		this.line = 1;
 		this.ch = 0;
@@ -433,6 +444,7 @@ const createParserState = (
 		let err: ParseError = {
 			type: "error",
 			filename: this.filename,
+			fileId: this.fileId,
 			line: this.line,
 			ch: this.ch,
 			message: msg,
@@ -450,6 +462,7 @@ const createParserState = (
 		errors.push({
 			type: "warning",
 			filename: this.filename,
+			fileId: this.fileId,
 			line: this.line,
 			message: msg,
 		});
@@ -472,6 +485,7 @@ const createParserState = (
 			ch: this.ch,
 			totalpos: this.totalpos,
 			filename: this.filename,
+			fileId: this.fileId,
 		};
 	},
 	set(where) {
@@ -480,6 +494,7 @@ const createParserState = (
 		this.ch = where.ch;
 		this.totalpos = where.totalpos;
 		this.filename = where.filename;
+		this.fileId = where.fileId;
 	},
 	indentation() {
 		let w = 0;
